@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#1a1f3c">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Career Comeback">
+<title>Career Comeback</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1a1f3c;--navy-mid:#252b4a;--navy-light:#2f3660;
+  --gold:#c9a84c;--gold-light:#e8c96a;--gold-pale:#fdf4e0;
+  --sage:#4a8c72;--sage-pale:#e6f4ef;--sage-dark:#3a7060;
+  --amber:#d4813a;--amber-pale:#fef0e3;
+  --rose:#c0445a;--rose-pale:#fceaed;
+  --blue:#3b6fd4;--blue-pale:#eef2fc;
+  --purple:#7c5cbf;--purple-pale:#f0ecfa;
+  --text:#1a1f3c;--text-mid:#4a506e;--text-muted:#8890b0;
+  --surface:#f7f8fc;--card:#fff;--border:rgba(26,31,60,0.1);
+  --radius:16px;--radius-sm:10px;
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--surface);color:var(--text);min-height:100dvh;overflow-x:hidden}
+
+/* ─── Header ─── */
+.app-header{background:var(--navy);color:#fff;padding:calc(48px + var(--safe-top)) 20px 20px;position:relative;overflow:hidden}
+.app-header::before{content:'';position:absolute;top:-60px;right:-40px;width:200px;height:200px;background:var(--gold);opacity:.07;border-radius:50%}
+.app-header .greeting{font-size:12px;color:rgba(255,255,255,.5);letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px}
+.app-header h1{font-family:'DM Serif Display',serif;font-size:24px;font-weight:400;line-height:1.2}
+.app-header h1 span{color:var(--gold-light)}
+.role-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(201,168,76,.18);color:var(--gold-light);font-size:12px;padding:3px 10px;border-radius:20px;margin-top:8px}
+.header-meta{display:flex;align-items:center;justify-content:space-between;margin-top:14px}
+.prog-ring-wrap{display:flex;align-items:center;gap:10px}
+.prog-ring-wrap svg{transform:rotate(-90deg)}
+.ring-pct{font-size:20px;font-weight:600;color:#fff;line-height:1}
+.ring-label{font-size:11px;color:rgba(255,255,255,.5)}
+.tasks-badge{background:rgba(255,255,255,.08);border-radius:10px;padding:7px 12px;text-align:center}
+.tasks-badge .tb-num{font-size:18px;font-weight:600;color:var(--gold-light)}
+.tasks-badge .tb-lbl{font-size:10px;color:rgba(255,255,255,.5)}
+
+/* ─── Onboarding wizard ─── */
+#wizard{position:fixed;inset:0;background:var(--navy);z-index:500;display:flex;flex-direction:column;overflow:hidden}
+#wizard.hidden{display:none}
+.wiz-scroll{flex:1;overflow-y:auto;padding:calc(60px + var(--safe-top)) 24px calc(100px + var(--safe-bottom))}
+.wiz-step{display:none}
+.wiz-step.active{display:block}
+.wiz-icon{width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.wiz-icon svg{width:28px;height:28px;stroke:#fff;stroke-width:1.8;fill:none}
+.wiz-title{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;line-height:1.2;margin-bottom:8px}
+.wiz-sub{font-size:14px;color:rgba(255,255,255,.6);line-height:1.6;margin-bottom:24px}
+.wiz-field{margin-bottom:14px}
+.wiz-field label{display:block;font-size:12px;color:rgba(255,255,255,.5);margin-bottom:5px;letter-spacing:.04em}
+.wiz-field input,.wiz-field select,.wiz-field textarea{width:100%;padding:13px 14px;background:rgba(255,255,255,.08);border:1.5px solid rgba(255,255,255,.15);border-radius:var(--radius-sm);font-family:inherit;font-size:15px;color:#fff;outline:none;-webkit-appearance:none}
+.wiz-field input::placeholder,.wiz-field textarea::placeholder{color:rgba(255,255,255,.3)}
+.wiz-field input:focus,.wiz-field select:focus,.wiz-field textarea:focus{border-color:var(--gold);background:rgba(255,255,255,.12)}
+.wiz-field select option{background:var(--navy);color:#fff}
+.wiz-field textarea{resize:none;min-height:90px}
+.upload-box{border:2px dashed rgba(255,255,255,.2);border-radius:var(--radius);padding:28px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px}
+.upload-box:active,.upload-box.drag{border-color:var(--gold);background:rgba(201,168,76,.08)}
+.upload-box .ub-icon{width:44px;height:44px;background:rgba(255,255,255,.08);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 10px}
+.upload-box .ub-icon svg{width:22px;height:22px;stroke:#fff}
+.upload-box h4{font-size:15px;color:#fff;margin-bottom:3px}
+.upload-box p{font-size:12px;color:rgba(255,255,255,.45)}
+.file-badge{display:none;background:rgba(74,140,114,.2);border:1px solid rgba(74,140,114,.4);border-radius:var(--radius-sm);padding:10px 14px;font-size:13px;color:#7ecfb0;margin-bottom:14px;align-items:center;gap:8px}
+.file-badge.show{display:flex}
+.wiz-footer{position:fixed;bottom:0;left:0;right:0;padding:16px 24px calc(16px + var(--safe-bottom));background:var(--navy);border-top:1px solid rgba(255,255,255,.08)}
+.wiz-progress{display:flex;gap:5px;justify-content:center;margin-bottom:14px}
+.wiz-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.2);transition:all .3s}
+.wiz-dot.active{background:var(--gold);width:18px;border-radius:3px}
+.wiz-dot.done{background:var(--sage)}
+.btn-primary{width:100%;padding:15px;background:var(--gold);color:var(--navy);border:none;border-radius:var(--radius);font-family:inherit;font-size:16px;font-weight:600;cursor:pointer;transition:opacity .15s}
+.btn-primary:active{opacity:.85}
+.btn-primary:disabled{opacity:.4;cursor:not-allowed}
+.btn-skip{width:100%;padding:10px;background:none;border:none;font-family:inherit;font-size:13px;color:rgba(255,255,255,.35);cursor:pointer;margin-top:6px}
+
+/* ─── AI generating ─── */
+#ai-generating{position:fixed;inset:0;background:var(--navy);z-index:600;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px}
+#ai-generating.show{display:flex}
+.gen-orb{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--amber));display:flex;align-items:center;justify-content:center;margin-bottom:24px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);box-shadow:0 0 0 0 rgba(201,168,76,.3)}50%{transform:scale(1.06);box-shadow:0 0 0 16px rgba(201,168,76,0)}}
+.gen-orb svg{width:36px;height:36px;stroke:#fff;fill:none;stroke-width:1.8}
+#gen-title{font-family:'DM Serif Display',serif;font-size:22px;color:#fff;margin-bottom:8px}
+#gen-sub{font-size:13px;color:rgba(255,255,255,.5);line-height:1.5;max-width:260px}
+.gen-steps{margin-top:28px;display:flex;flex-direction:column;gap:8px;width:100%;max-width:280px}
+.gen-step{display:flex;align-items:center;gap:10px;font-size:13px;color:rgba(255,255,255,.4);transition:color .3s}
+.gen-step.active{color:rgba(255,255,255,.9)}
+.gen-step.done{color:var(--sage)}
+.gen-step .gs-dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.15);flex-shrink:0;transition:background .3s}
+.gen-step.active .gs-dot{background:var(--gold);animation:dot-pulse .8s ease-in-out infinite}
+.gen-step.done .gs-dot{background:var(--sage)}
+@keyframes dot-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ─── Nav ─── */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);display:flex;padding-bottom:var(--safe-bottom);z-index:100}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:10px 4px 8px;gap:3px;background:none;border:none;cursor:pointer;font-family:inherit;font-size:10px;color:var(--text-muted)}
+.nav-btn.active{color:var(--navy)}
+.nav-btn svg{width:21px;height:21px;stroke-width:1.7;stroke:currentColor;fill:none}
+.nav-btn.active svg{stroke-width:2.2}
+
+/* ─── Screens ─── */
+.screen{display:none;padding:14px 14px calc(80px + var(--safe-bottom))}
+.screen.active{display:block}
+.sec-hdr{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-muted);margin:18px 0 10px}
+.sec-hdr:first-child{margin-top:4px}
+
+/* ─── Week cards ─── */
+.week-card{background:var(--card);border-radius:var(--radius);margin-bottom:10px;border:1px solid var(--border);overflow:hidden}
+.wc-header{display:flex;align-items:center;gap:10px;padding:13px 14px;cursor:pointer;user-select:none}
+.wk-badge{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;background:var(--surface);color:var(--text-muted);transition:all .2s}
+.wk-badge.started{background:var(--navy);color:#fff}
+.wk-badge.done{background:var(--sage-pale);color:var(--sage-dark)}
+.wk-info{flex:1;min-width:0}
+.wk-info h3{font-size:14px;font-weight:500;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wk-info p{font-size:12px;color:var(--text-muted);margin-top:1px}
+.wk-dot{width:8px;height:8px;border-radius:50%;background:var(--border);flex-shrink:0}
+.wk-dot.started{background:var(--amber)}
+.wk-dot.done{background:var(--sage)}
+.chev{transition:transform .2s;color:var(--text-muted);flex-shrink:0}
+.chev.open{transform:rotate(180deg)}
+.wc-body{display:none;border-top:1px solid var(--border);padding:14px}
+.wc-body.open{display:block}
+
+/* Body sections */
+.body-label{font-size:10px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--text-muted);margin:14px 0 8px}
+.body-label:first-child{margin-top:0}
+.action-row{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid rgba(26,31,60,.05)}
+.action-row:last-child{border-bottom:none}
+.cb{width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;cursor:pointer;margin-top:2px;background:#fff;transition:all .15s}
+.cb.on{background:var(--sage);border-color:var(--sage)}
+.cb.on svg{display:block}
+.cb svg{display:none;width:11px;height:11px;stroke:#fff;stroke-width:3;fill:none}
+.action-text{font-size:13px;line-height:1.5;flex:1;cursor:pointer}
+.action-text.done{color:var(--text-muted);text-decoration:line-through}
+
+/* Skill to learn cards */
+.learn-card{background:var(--blue-pale);border:1px solid rgba(59,111,212,.15);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:8px}
+.learn-card .lc-name{font-size:13px;font-weight:500;color:var(--blue);margin-bottom:3px}
+.learn-card .lc-why{font-size:12px;color:var(--text-mid);line-height:1.4;margin-bottom:7px}
+.lc-links{display:flex;flex-direction:column;gap:4px}
+.lc-link{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--blue);text-decoration:none}
+.lc-link svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2;flex-shrink:0}
+
+/* Cert cards */
+.cert-card{background:var(--purple-pale);border:1px solid rgba(124,92,191,.15);border-radius:var(--radius-sm);padding:11px 13px;margin-bottom:8px;display:flex;gap:10px;align-items:flex-start}
+.cert-icon{font-size:20px;flex-shrink:0}
+.cert-body .cert-name{font-size:13px;font-weight:500;color:var(--purple);margin-bottom:2px}
+.cert-body .cert-detail{font-size:12px;color:var(--text-mid);line-height:1.4}
+.cert-body a{font-size:12px;color:var(--purple);text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-top:5px}
+
+/* Resource links */
+.res-link{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(26,31,60,.05);text-decoration:none;color:var(--navy);font-size:13px}
+.res-link:last-child{border-bottom:none}
+.res-ico{width:26px;height:26px;background:var(--gold-pale);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.res-ico svg{width:13px;height:13px;stroke:var(--gold);fill:none;stroke-width:2}
+
+/* Deliverable */
+.deliverable{background:linear-gradient(135deg,var(--navy),var(--navy-light));border-radius:var(--radius-sm);padding:12px 14px;display:flex;gap:10px}
+.deliverable .d-icon{color:var(--gold-light);font-size:16px;flex-shrink:0;margin-top:1px}
+.deliverable p{font-size:13px;color:rgba(255,255,255,.9);line-height:1.5}
+
+/* ─── Skills screen ─── */
+.skill-cols{display:grid;gap:10px}
+.skill-col{background:var(--card);border-radius:var(--radius);padding:13px;border:1px solid var(--border)}
+.skill-col h3{font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.skill-col.keep h3{color:var(--sage-dark)}
+.skill-col.learn h3{color:var(--blue)}
+.skill-col.refresh h3{color:var(--amber)}
+.skill-col.discard h3{color:var(--rose)}
+.cdot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0}
+.keep .cdot{background:var(--sage)}
+.learn .cdot{background:var(--blue)}
+.refresh .cdot{background:var(--amber)}
+.discard .cdot{background:var(--rose)}
+.tags{display:flex;flex-wrap:wrap;gap:5px;min-height:28px}
+.tag{font-size:12px;padding:4px 10px;border-radius:20px;border:none;cursor:pointer;font-family:inherit;font-weight:500}
+.keep .tag{background:var(--sage-pale);color:var(--sage-dark)}
+.learn .tag{background:var(--blue-pale);color:var(--blue)}
+.refresh .tag{background:var(--amber-pale);color:var(--amber)}
+.discard .tag{background:var(--rose-pale);color:var(--rose)}
+.tag:active{opacity:.75}
+.tag-hint{font-size:10px;color:var(--text-muted);margin-top:7px}
+
+/* ─── Profile screen ─── */
+.p-card{background:var(--card);border-radius:var(--radius);padding:14px;border:1px solid var(--border);margin-bottom:10px}
+.p-card h3{font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:12px;text-transform:uppercase;letter-spacing:.05em}
+.f-group{margin-bottom:11px}
+.f-group:last-child{margin-bottom:0}
+.f-group label{display:block;font-size:11px;color:var(--text-muted);margin-bottom:4px}
+.f-group input,.f-group select,.f-group textarea{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:var(--radius-sm);font-family:inherit;font-size:14px;color:var(--text);background:var(--surface);outline:none;-webkit-appearance:none}
+.f-group input:focus,.f-group select:focus,.f-group textarea:focus{border-color:var(--navy);background:#fff}
+.f-group textarea{resize:none;min-height:76px}
+.f-group select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%238890b0' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 11px center;padding-right:32px}
+.f-group input.hl,.f-group select.hl,.f-group textarea.hl{border-color:var(--gold);background:#fffdf5;animation:hl-pulse 1.4s ease-out}
+@keyframes hl-pulse{0%{box-shadow:0 0 0 0 rgba(201,168,76,.4)}70%{box-shadow:0 0 0 6px rgba(201,168,76,0)}100%{box-shadow:none}}
+
+/* ─── Toast ─── */
+.toast{position:fixed;bottom:calc(78px + var(--safe-bottom) + 8px);left:50%;transform:translateX(-50%) translateY(16px);background:var(--navy);color:#fff;font-size:12px;padding:9px 16px;border-radius:20px;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap;z-index:400}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ─── Empty / loading states ─── */
+.empty{text-align:center;padding:40px 20px;color:var(--text-muted)}
+.empty p{font-size:13px;margin-top:8px}
+.inline-spinner{display:inline-block;width:12px;height:12px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+
+<!-- ═══ ONBOARDING WIZARD ═══ -->
+<div id="wizard">
+  <div class="wiz-scroll">
+
+    <!-- Step 1: Welcome -->
+    <div class="wiz-step active" id="step-1">
+      <div class="wiz-icon" style="background:rgba(201,168,76,.2)">
+        <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      </div>
+      <h2 class="wiz-title">Your career comeback starts here</h2>
+      <p class="wiz-sub">In 3 quick steps, we'll build your personal 8-week action plan — powered by your resume and your goals.</p>
+      <div class="wiz-field">
+        <label>Your name</label>
+        <input type="text" id="w-name" placeholder="Full name" autocomplete="name">
+      </div>
+      <div class="wiz-field">
+        <label>Your situation</label>
+        <select id="w-situation">
+          <option value="">Select your situation…</option>
+          <option>Returning after medical recovery</option>
+          <option>Returning after layoff</option>
+          <option>Medical recovery + layoff</option>
+          <option>Ready to level up</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Step 2: Resume upload -->
+    <div class="wiz-step" id="step-2">
+      <div class="wiz-icon" style="background:rgba(59,111,212,.2)">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      </div>
+      <h2 class="wiz-title">Upload your resume</h2>
+      <p class="wiz-sub">Claude will read it and automatically fill your profile, identify skills to keep, refresh, learn, and build a personalised action plan with resources and certifications.</p>
+      <div class="upload-box" id="wiz-upload-box" onclick="document.getElementById('wiz-file').click()">
+        <div class="ub-icon"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg></div>
+        <h4>Tap to upload resume</h4>
+        <p>PDF or text file</p>
+      </div>
+      <input type="file" id="wiz-file" accept=".pdf,.txt" style="display:none">
+      <div class="file-badge" id="wiz-file-badge">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" width="16" height="16" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span id="wiz-file-name">resume.pdf</span>
+      </div>
+      <p style="font-size:12px;color:rgba(255,255,255,.35);text-align:center">Resume stays on your device — never uploaded to any server</p>
+    </div>
+
+    <!-- Step 3: Target -->
+    <div class="wiz-step" id="step-3">
+      <div class="wiz-icon" style="background:rgba(74,140,114,.2)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg>
+      </div>
+      <h2 class="wiz-title">What's your target?</h2>
+      <p class="wiz-sub">Tell us where you want to go. Claude will research what skills, certifications, and actions you need to get there.</p>
+      <div class="wiz-field">
+        <label>Target role</label>
+        <input type="text" id="w-role" placeholder="e.g. Senior Product Manager">
+      </div>
+      <div class="wiz-field">
+        <label>Target industry</label>
+        <input type="text" id="w-industry" placeholder="e.g. HealthTech, Finance, SaaS">
+      </div>
+      <div class="wiz-field">
+        <label>Your 8-week goal (optional)</label>
+        <textarea id="w-goal" placeholder="e.g. Land 3 interviews at Series B startups by end of week 8"></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Wizard footer -->
+  <div class="wiz-footer">
+    <div class="wiz-progress">
+      <div class="wiz-dot active" id="wd1"></div>
+      <div class="wiz-dot" id="wd2"></div>
+      <div class="wiz-dot" id="wd3"></div>
+    </div>
+    <button class="btn-primary" id="wiz-next-btn" onclick="wizNext()">Continue</button>
+    <button class="btn-skip" id="wiz-skip-btn" onclick="wizSkip()" style="display:none">Skip resume upload</button>
+  </div>
+</div>
+
+<!-- ═══ AI GENERATING SCREEN ═══ -->
+<div id="ai-generating">
+  <div class="gen-orb">
+    <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+  </div>
+  <div id="gen-title">Building your plan…</div>
+  <div id="gen-sub">Claude is reading your resume and researching your target role</div>
+  <div class="gen-steps">
+    <div class="gen-step" id="gs1"><div class="gs-dot"></div>Reading your resume</div>
+    <div class="gen-step" id="gs2"><div class="gs-dot"></div>Identifying skill gaps</div>
+    <div class="gen-step" id="gs3"><div class="gs-dot"></div>Researching certifications & resources</div>
+    <div class="gen-step" id="gs4"><div class="gs-dot"></div>Building your 8-week action plan</div>
+  </div>
+</div>
+
+<!-- ═══ MAIN APP ═══ -->
+<div class="app-header">
+  <div class="greeting">Career Comeback</div>
+  <h1 id="hdr-name">Your <span>comeback</span> starts here</h1>
+  <div id="hdr-chip" class="role-chip" style="display:none">→ <span id="hdr-role"></span></div>
+  <div class="header-meta">
+    <div class="prog-ring-wrap">
+      <svg width="52" height="52" viewBox="0 0 52 52">
+        <circle cx="26" cy="26" r="20" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="4"/>
+        <circle id="ring-fill" cx="26" cy="26" r="20" fill="none" stroke="#c9a84c" stroke-width="4"
+          stroke-linecap="round" stroke-dasharray="125.7" stroke-dashoffset="125.7"
+          style="transition:stroke-dashoffset .5s ease"/>
+      </svg>
+      <div><div class="ring-pct" id="ring-pct">0%</div><div class="ring-label">complete</div></div>
+    </div>
+    <div class="tasks-badge">
+      <div class="tb-num" id="tasks-done">0</div>
+      <div class="tb-lbl">tasks done</div>
+    </div>
+  </div>
+</div>
+
+<!-- Plan -->
+<div class="screen active" id="screen-plan">
+  <div class="sec-hdr">Your personalised 8-week plan</div>
+  <div id="weeks-list"></div>
+</div>
+
+<!-- Skills -->
+<div class="screen" id="screen-skills">
+  <div class="sec-hdr">Skills inventory</div>
+  <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px">Tap any skill to cycle it to the next column.</p>
+  <div class="skill-cols">
+    <div class="skill-col keep"><h3><span class="cdot"></span>Keep & strengthen</h3><div class="tags" id="t-keep"></div><p class="tag-hint">Tap → moves to Refresh</p></div>
+    <div class="skill-col learn"><h3><span class="cdot"></span>Learn (new skills needed)</h3><div class="tags" id="t-learn"></div><p class="tag-hint">Tap → moves to Keep</p></div>
+    <div class="skill-col refresh"><h3><span class="cdot"></span>Refresh</h3><div class="tags" id="t-refresh"></div><p class="tag-hint">Tap → moves to Discard</p></div>
+    <div class="skill-col discard"><h3><span class="cdot"></span>Discard</h3><div class="tags" id="t-discard"></div><p class="tag-hint">Tap → moves to Keep</p></div>
+  </div>
+</div>
+
+<!-- Profile -->
+<div class="screen" id="screen-profile">
+  <div class="sec-hdr">My profile</div>
+  <div class="p-card">
+    <h3>About you</h3>
+    <div class="f-group"><label>Name</label><input type="text" id="p-name" oninput="saveProfile()"></div>
+    <div class="f-group"><label>Current / most recent title</label><input type="text" id="p-ctitle" oninput="saveProfile()"></div>
+    <div class="f-group"><label>Situation</label>
+      <select id="p-sit" onchange="saveProfile()">
+        <option value="">Select…</option>
+        <option>Returning after medical recovery</option>
+        <option>Returning after layoff</option>
+        <option>Medical recovery + layoff</option>
+        <option>Ready to level up</option>
+      </select>
+    </div>
+    <div class="f-group"><label>Target role</label><input type="text" id="p-role" oninput="saveProfile()"></div>
+    <div class="f-group"><label>Target industry</label><input type="text" id="p-ind" oninput="saveProfile()"></div>
+    <div class="f-group"><label>8-week goal</label><textarea id="p-goal" oninput="saveProfile()"></textarea></div>
+  </div>
+  <div class="p-card">
+    <h3>Coach notes</h3>
+    <div class="f-group"><textarea id="p-notes" placeholder="Your coach's guidance will appear here…" oninput="saveProfile()"></textarea></div>
+  </div>
+  <p style="font-size:11px;color:var(--text-muted);text-align:center;padding:8px 0 4px">Data saved privately on this device</p>
+</div>
+
+<!-- Nav -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="showScreen('plan',this)" id="nav-plan">
+    <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+    Plan
+  </button>
+  <button class="nav-btn" onclick="showScreen('skills',this)" id="nav-skills">
+    <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+    Skills
+  </button>
+  <button class="nav-btn" onclick="showScreen('profile',this)" id="nav-profile">
+    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+    Profile
+  </button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ── State ──
+let S = {
+  checks:{}, skills:{keep:[],learn:[],refresh:[],discard:[]},
+  profile:{name:'',ctitle:'',sit:'',role:'',ind:'',goal:'',notes:''},
+  weeks:[], onboarded:false
+};
+
+function load(){try{const d=localStorage.getItem('cc3');if(d)S={...S,...JSON.parse(d)};}catch(e){}}
+function save(){try{localStorage.setItem('cc3',JSON.stringify(S));}catch(e){}}
+
+// ── Wizard ──
+let wizStep=1, resumeData=null, resumeType=null;
+
+document.getElementById('wiz-file').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f)return;
+  document.getElementById('wiz-file-name').textContent=f.name;
+  document.getElementById('wiz-file-badge').classList.add('show');
+  document.getElementById('wiz-skip-btn').style.display='none';
+  if(f.name.endsWith('.pdf')){
+    resumeType='pdf';
+    const r=new FileReader(); r.onload=ev=>{resumeData=ev.target.result.split(',')[1];}; r.readAsDataURL(f);
+  } else {
+    resumeType='text';
+    const r=new FileReader(); r.onload=ev=>{resumeData=ev.target.result;}; r.readAsText(f);
+  }
+});
+
+// Drag & drop on wizard upload box
+const wub=document.getElementById('wiz-upload-box');
+wub.addEventListener('dragover',e=>{e.preventDefault();wub.classList.add('drag');});
+wub.addEventListener('dragleave',()=>wub.classList.remove('drag'));
+wub.addEventListener('drop',e=>{
+  e.preventDefault();wub.classList.remove('drag');
+  const f=e.dataTransfer.files[0];
+  if(f){document.getElementById('wiz-file').files=e.dataTransfer.files; document.getElementById('wiz-file').dispatchEvent(new Event('change'));}
+});
+
+function wizUpdateDots(){
+  for(let i=1;i<=3;i++){
+    const d=document.getElementById('wd'+i);
+    d.className='wiz-dot'+(i<wizStep?' done':i===wizStep?' active':'');
+  }
+}
+
+function wizNext(){
+  if(wizStep===1){
+    const name=document.getElementById('w-name').value.trim();
+    if(!name){showToast('Please enter your name');return;}
+    S.profile.name=name;
+    S.profile.sit=document.getElementById('w-situation').value;
+    wizStep=2;
+    document.getElementById('step-1').classList.remove('active');
+    document.getElementById('step-2').classList.add('active');
+    document.getElementById('wiz-skip-btn').style.display='block';
+    wizUpdateDots();
+  } else if(wizStep===2){
+    if(!resumeData){showToast('Please upload your resume, or skip');return;}
+    wizStep=3;
+    document.getElementById('step-2').classList.remove('active');
+    document.getElementById('step-3').classList.add('active');
+    document.getElementById('wiz-skip-btn').style.display='none';
+    wizUpdateDots();
+    // Pre-fill role/industry if profile already has them
+    if(S.profile.role)document.getElementById('w-role').value=S.profile.role;
+    if(S.profile.ind)document.getElementById('w-ind').value=S.profile.ind;
+  } else if(wizStep===3){
+    const role=document.getElementById('w-role').value.trim();
+    if(!role){showToast('Please enter your target role');return;}
+    S.profile.role=role;
+    S.profile.ind=document.getElementById('w-industry').value.trim();
+    S.profile.goal=document.getElementById('w-goal').value.trim();
+    save();
+    startGeneration();
+  }
+}
+
+function wizSkip(){
+  if(wizStep===2){
+    resumeData=null;resumeType=null;
+    wizStep=3;
+    document.getElementById('step-2').classList.remove('active');
+    document.getElementById('step-3').classList.add('active');
+    document.getElementById('wiz-skip-btn').style.display='none';
+    wizUpdateDots();
+  }
+}
+
+// ── Generation ──
+function setGenStep(n){
+  for(let i=1;i<=4;i++){
+    const el=document.getElementById('gs'+i);
+    el.className='gen-step'+(i<n?' done':i===n?' active':'');
+  }
+}
+
+async function startGeneration(){
+  document.getElementById('wizard').classList.add('hidden');
+  const gen=document.getElementById('ai-generating');
+  gen.classList.add('show');
+  setGenStep(1);
+
+  const role=S.profile.role, ind=S.profile.ind||'', name=S.profile.name;
+
+  // Build message
+  let content=[];
+  if(resumeData){
+    if(resumeType==='pdf') content.push({type:'document',source:{type:'base64',media_type:'application/pdf',data:resumeData}});
+    else content.push({type:'text',text:'RESUME:\n\n'+resumeData});
+  } else {
+    content.push({type:'text',text:`No resume provided. The person's name is ${name}. Situation: ${S.profile.sit||'career transition'}.`});
+  }
+
+  setTimeout(()=>setGenStep(2),1200);
+  setTimeout(()=>setGenStep(3),2800);
+  setTimeout(()=>setGenStep(4),4500);
+
+  content.push({type:'text',text:`
+You are a career coach AI. Based on ${resumeData?'the resume above':'the person\'s background'}, build a complete personalised career comeback plan.
+
+Target role: ${role}
+Target industry: ${ind||'not specified'}
+Person: ${name}
+Situation: ${S.profile.sit||'career transition'}
+
+Return ONLY valid JSON (no markdown fences, no commentary):
+
+{
+  "profile": {
+    "name": "extracted or provided name",
+    "ctitle": "most recent job title from resume",
+    "situation": "best match from: Returning after medical recovery | Returning after layoff | Medical recovery + layoff | Ready to level up",
+    "role": "suggested target role (one step above current trajectory toward ${role})",
+    "ind": "industry from resume or provided",
+    "goal": "one compelling 8-week goal sentence tailored to their background"
+  },
+  "skills": {
+    "keep": ["skill1","skill2","skill3","skill4","skill5"],
+    "learn": ["new skill 1 needed for ${role}","new skill 2","new skill 3","new skill 4"],
+    "refresh": ["skill to update 1","skill to update 2","skill to update 3"],
+    "discard": ["outdated skill 1","outdated skill 2"]
+  },
+  "certifications": [
+    {
+      "name": "certification name",
+      "provider": "e.g. Google, AWS, PMI",
+      "why": "one sentence why this matters for ${role}",
+      "duration": "e.g. 6 weeks",
+      "url": "https://... (real URL)",
+      "free": true
+    }
+  ],
+  "weeks": [
+    {
+      "n": 1,
+      "theme": "Self-assessment & mindset reset",
+      "actions": [
+        "specific action tailored to this person",
+        "specific action 2",
+        "specific action 3",
+        "specific action 4"
+      ],
+      "skillsToLearn": [
+        {
+          "name": "skill or tool to start learning this week",
+          "why": "why this matters for ${role}",
+          "resources": [
+            {"label": "resource name", "url": "https://real-url.com"},
+            {"label": "resource 2", "url": "https://real-url-2.com"}
+          ]
+        }
+      ],
+      "certThisWeek": "certification name to start or null",
+      "resources": [
+        {"label": "resource name", "url": "https://real-url.com"},
+        {"label": "resource 2", "url": "https://real-url.com"}
+      ],
+      "deliverable": "specific tangible output for this week"
+    }
+  ],
+  "confidence": "one warm specific encouraging sentence based on what you see"
+}
+
+IMPORTANT RULES:
+- Generate exactly 8 weeks
+- Week 1: mindset + assessment. Week 2: market research + skill gaps. Weeks 3-5: upskilling (tie specific skills from the learn list to specific weeks). Week 4: resume refresh. Week 5: LinkedIn. Week 6: portfolio. Week 7: networking. Week 8: interview prep + applications.
+- All resource URLs must be REAL working links (LinkedIn Learning, Coursera, freeCodeCamp, Google, YouTube, official docs, etc)
+- Certifications should be real and relevant to ${role} in ${ind||'their field'}
+- Actions must be specific to this person's background, not generic
+- skillsToLearn per week should reference things from the skills.learn list where possible
+- certThisWeek should match one of the certifications where relevant, otherwise null
+`});
+
+  try {
+    const resp = await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-6',
+        max_tokens:4000,
+        messages:[{role:'user',content}]
+      })
+    });
+    const data = await resp.json();
+    const raw = data.content?.find(b=>b.type==='text')?.text||'{}';
+    let p;
+    try{ p=JSON.parse(raw.replace(/^```json\s*/,'').replace(/\s*```$/,'').trim()); }
+    catch(e){ throw new Error('JSON parse failed: '+raw.substring(0,200)); }
+
+    // Apply to state
+    if(p.profile){
+      Object.entries(p.profile).forEach(([k,v])=>{ if(v&&!S.profile[k]) S.profile[k]=v; });
+      // Always apply ctitle and goal from AI
+      if(p.profile.ctitle) S.profile.ctitle=p.profile.ctitle;
+      if(p.profile.goal && !S.profile.goal) S.profile.goal=p.profile.goal;
+    }
+    if(p.skills){ S.skills=p.skills; }
+    if(p.weeks && p.weeks.length){ S.weeks=p.weeks; }
+    // Store certs and confidence globally for rendering
+    S.certifications=p.certifications||[];
+    S.confidence=p.confidence||'';
+    S.onboarded=true;
+    save();
+
+    gen.classList.remove('show');
+    buildApp();
+    showToast('Your personalised plan is ready! ✦');
+  } catch(err){
+    gen.classList.remove('show');
+    // Fall back to default plan
+    S.weeks=defaultWeeks(role, ind);
+    S.onboarded=true;
+    save();
+    buildApp();
+    showToast('Plan ready (offline mode)');
+  }
+}
+
+function defaultWeeks(role, ind){
+  return [
+    {n:1,theme:"Self-assessment & mindset reset",actions:["Write your career story — where you've been and where you're going","List your top 10 professional achievements","Identify 3 energy drains and 3 things that energize you","Set your 8-week goal with a clear target role"],skillsToLearn:[],certThisWeek:null,resources:[{label:"O*NET career assessment",url:"https://www.onetonline.org/"},{label:"Ikigai framework",url:"https://ikigai-living.com/what-is-ikigai/"}],deliverable:"Written career story + achievement list"},
+    {n:2,theme:"Market research & skill gap analysis",actions:["Find 10 job postings for your target role — note recurring keywords","Map skills: Have / Refresh / Need to learn","Research 3 target companies","Identify 2–3 certifications valued in your field"],skillsToLearn:[],certThisWeek:null,resources:[{label:"LinkedIn Jobs",url:"https://www.linkedin.com/jobs/"},{label:"Glassdoor",url:"https://www.glassdoor.com"},{label:"Lightcast skills data",url:"https://lightcast.io/"}],deliverable:"Skill gap table + target company list"},
+    {n:3,theme:"Upskilling — core skills",actions:["Enroll in 1–2 courses for your top skill gaps","Block 45 min daily for learning","Join 1 online community in your field","Follow 10 industry thought leaders"],skillsToLearn:[],certThisWeek:null,resources:[{label:"Coursera",url:"https://www.coursera.org"},{label:"LinkedIn Learning",url:"https://www.linkedin.com/learning/"},{label:"freeCodeCamp",url:"https://www.freecodecamp.org"}],deliverable:"Course enrolled + learning block in calendar"},
+    {n:4,theme:"Resume refresh",actions:["Rewrite summary to reflect your target role","Add quantified achievements (numbers, %, $)","Remove roles older than 15 years or irrelevant ones","Run through ATS checker"],skillsToLearn:[],certThisWeek:null,resources:[{label:"Jobscan ATS checker",url:"https://www.jobscan.co"},{label:"Resume Worded",url:"https://resumeworded.com"}],deliverable:"ATS-optimised resume v1"},
+    {n:5,theme:"LinkedIn overhaul",actions:["Rewrite headline: Role | Value | Industry","Update About section in first person","Add Featured section with resume or portfolio link","Request 2–3 recommendations"],skillsToLearn:[],certThisWeek:null,resources:[{label:"LinkedIn profile tips",url:"https://www.linkedin.com/help/linkedin/answer/a554351"}],deliverable:"LinkedIn at All-Star strength"},
+    {n:6,theme:"Portfolio building",actions:["Pick 3–5 projects showing target-role skills","Write case studies: problem → approach → outcome","Create a portfolio page on Notion or GitHub","Complete a mini-project if needed"],skillsToLearn:[],certThisWeek:null,resources:[{label:"Notion templates",url:"https://www.notion.so/templates"},{label:"GitHub Pages",url:"https://pages.github.com"}],deliverable:"3+ case studies live and shareable"},
+    {n:7,theme:"Networking & outreach",actions:["Reach out to 5 people for 20-min career conversations","Attend 1 industry event","Draft outreach message template","Engage on LinkedIn: comment on 3 posts daily"],skillsToLearn:[],certThisWeek:null,resources:[{label:"Meetup",url:"https://www.meetup.com"},{label:"Lunchclub",url:"https://lunchclub.com"}],deliverable:"5 outreach messages sent + 1 event attended"},
+    {n:8,theme:"Interview prep & applications",actions:["Practice STAR answers for 10 behavioral questions","Research salary ranges","Submit 5 tailored applications","Do 2 mock interviews"],skillsToLearn:[],certThisWeek:null,resources:[{label:"Big Interview",url:"https://biginterview.com"},{label:"Levels.fyi",url:"https://www.levels.fyi"},{label:"Glassdoor interviews",url:"https://www.glassdoor.com/Interview/"}],deliverable:"10 STAR answers + 5 applications + 2 mock interviews"}
+  ];
+}
+
+// ── Build app ──
+function buildApp(){
+  updateHeader();
+  buildWeeks();
+  renderSkills();
+  fillProfileUI();
+  updateProgress();
+}
+
+function updateHeader(){
+  const n=S.profile.name, r=S.profile.role;
+  document.getElementById('hdr-name').innerHTML=n?`${n}'s <span>comeback</span>`:`Your <span>comeback</span> starts here`;
+  const chip=document.getElementById('hdr-chip');
+  if(r){document.getElementById('hdr-role').textContent=r;chip.style.display='inline-flex';}
+  else chip.style.display='none';
+}
+
+function buildWeeks(){
+  const list=document.getElementById('weeks-list');
+  list.innerHTML='';
+  const certMap={};
+  (S.certifications||[]).forEach(c=>{if(c.name)certMap[c.name]=c;});
+
+  (S.weeks||[]).forEach(w=>{
+    const doneCount=w.actions.filter((_,i)=>S.checks[`${w.n}-${i}`]).length;
+    const allDone=doneCount===w.actions.length;
+    const anyDone=doneCount>0;
+
+    const card=document.createElement('div');
+    card.className='week-card';
+
+    // Actions
+    const actHtml=(w.actions||[]).map((a,i)=>{
+      const ck=S.checks[`${w.n}-${i}`];
+      return`<div class="action-row">
+        <div class="cb${ck?' on':''}" data-w="${w.n}" data-i="${i}"><svg viewBox="0 0 12 12"><polyline points="2,6 5,9 10,3"/></svg></div>
+        <div class="action-text${ck?' done':''}" data-w="${w.n}" data-i="${i}">${a}</div>
+      </div>`;
+    }).join('');
+
+    // Skills to learn this week
+    let learnHtml='';
+    if(w.skillsToLearn && w.skillsToLearn.length){
+      learnHtml=`<div class="body-label">Skills to learn this week</div>`;
+      learnHtml+=w.skillsToLearn.map(sl=>{
+        const links=(sl.resources||[]).map(r=>`<a href="${r.url}" target="_blank" rel="noopener" class="lc-link"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>${r.label}</a>`).join('');
+        return`<div class="learn-card"><div class="lc-name">${sl.name}</div><div class="lc-why">${sl.why||''}</div><div class="lc-links">${links}</div></div>`;
+      }).join('');
+    }
+
+    // Cert this week
+    let certHtml='';
+    if(w.certThisWeek && certMap[w.certThisWeek]){
+      const c=certMap[w.certThisWeek];
+      certHtml=`<div class="body-label">Certification to start</div>
+      <div class="cert-card">
+        <div class="cert-icon">🏅</div>
+        <div class="cert-body">
+          <div class="cert-name">${c.name}</div>
+          <div class="cert-detail">${c.provider||''} · ${c.duration||''} · ${c.free?'Free':'Paid'}</div>
+          <div class="cert-detail" style="margin-top:4px">${c.why||''}</div>
+          ${c.url?`<a href="${c.url}" target="_blank" rel="noopener">Start now <svg viewBox="0 0 24 24" width="10" height="10" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></a>`:''}
+        </div>
+      </div>`;
+    }
+
+    // Resources
+    const resHtml=(w.resources||[]).map(r=>`<a href="${r.url}" target="_blank" rel="noopener" class="res-link">
+      <div class="res-ico"><svg viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></div>
+      <span>${r.label}</span><span style="color:var(--text-muted);margin-left:auto">›</span>
+    </a>`).join('');
+
+    card.innerHTML=`
+      <div class="wc-header" data-wn="${w.n}">
+        <div class="wk-badge${allDone?' done':anyDone?' started':''}">W${w.n}</div>
+        <div class="wk-info"><h3>${w.theme}</h3><p id="wp-${w.n}">${doneCount}/${w.actions.length} done</p></div>
+        <div class="wk-dot${allDone?' done':anyDone?' started':''}"></div>
+        <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" width="17" height="17" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="wc-body" id="wb-${w.n}">
+        <div class="body-label">Actions</div>${actHtml}
+        ${learnHtml}
+        ${certHtml}
+        ${resHtml?`<div class="body-label" style="margin-top:14px">Resources & links</div>${resHtml}`:''}
+        <div class="body-label" style="margin-top:14px">Deliverable</div>
+        <div class="deliverable"><div class="d-icon">◎</div><p>${w.deliverable||''}</p></div>
+      </div>`;
+    list.appendChild(card);
+  });
+
+  // Event delegation
+  const wl=document.getElementById('weeks-list');
+  wl.addEventListener('click', e=>{
+    const cb=e.target.closest('.cb');
+    const at=e.target.closest('.action-text');
+    const hd=e.target.closest('.wc-header');
+    if(cb) toggleCheck(+cb.dataset.w,+cb.dataset.i);
+    else if(at) toggleCheck(+at.dataset.w,+at.dataset.i);
+    else if(hd) toggleWeek(+hd.dataset.wn);
+  });
+}
+
+function toggleWeek(n){
+  const body=document.getElementById(`wb-${n}`);
+  const card=body.closest('.week-card');
+  const chev=card.querySelector('.chev');
+  const open=body.classList.toggle('open');
+  chev.classList.toggle('open',open);
+}
+
+function toggleCheck(wn,ai){
+  const key=`${wn}-${ai}`;
+  S.checks[key]=!S.checks[key];
+  save();
+  const wl=document.getElementById('weeks-list');
+  const cb=wl.querySelector(`.cb[data-w="${wn}"][data-i="${ai}"]`);
+  const at=wl.querySelector(`.action-text[data-w="${wn}"][data-i="${ai}"]`);
+  if(cb)cb.classList.toggle('on',S.checks[key]);
+  if(at)at.classList.toggle('done',S.checks[key]);
+  // Update week header
+  const w=S.weeks.find(x=>x.n===wn);
+  if(w){
+    const done=w.actions.filter((_,i)=>S.checks[`${wn}-${i}`]).length;
+    const allDone=done===w.actions.length, anyDone=done>0;
+    const hdr=wl.querySelector(`.wc-header[data-wn="${wn}"]`);
+    if(hdr){
+      hdr.querySelector('.wk-badge').className=`wk-badge${allDone?' done':anyDone?' started':''}`;
+      hdr.querySelector('.wk-dot').className=`wk-dot${allDone?' done':anyDone?' started':''}`;
+    }
+    const pg=document.getElementById(`wp-${wn}`);
+    if(pg)pg.textContent=`${done}/${w.actions.length} done`;
+  }
+  updateProgress();
+  if(S.checks[key])showToast('✓ Done');
+}
+
+function updateProgress(){
+  const total=(S.weeks||[]).reduce((s,w)=>s+(w.actions||[]).length,0)||1;
+  const done=Object.values(S.checks).filter(Boolean).length;
+  const pct=Math.round(done/total*100);
+  const c=125.7;
+  document.getElementById('ring-fill').style.strokeDashoffset=c-(c*pct/100);
+  document.getElementById('ring-pct').textContent=pct+'%';
+  document.getElementById('tasks-done').textContent=done;
+}
+
+function renderSkills(){
+  ['keep','learn','refresh','discard'].forEach(col=>{
+    const wrap=document.getElementById('t-'+col);
+    wrap.innerHTML='';
+    (S.skills[col]||[]).forEach(s=>{
+      const t=document.createElement('button');
+      t.className='tag'; t.textContent=s;
+      t.onclick=()=>moveSkill(s,col);
+      wrap.appendChild(t);
+    });
+  });
+}
+
+function moveSkill(skill,from){
+  const order=['keep','learn','refresh','discard'];
+  const to=order[(order.indexOf(from)+1)%4];
+  S.skills[from]=(S.skills[from]||[]).filter(x=>x!==skill);
+  if(!S.skills[to])S.skills[to]=[];
+  S.skills[to].push(skill);
+  save(); renderSkills();
+  showToast(`Moved to ${to}`);
+}
+
+function fillProfileUI(){
+  document.getElementById('p-name').value=S.profile.name||'';
+  document.getElementById('p-ctitle').value=S.profile.ctitle||'';
+  document.getElementById('p-sit').value=S.profile.sit||'';
+  document.getElementById('p-role').value=S.profile.role||'';
+  document.getElementById('p-ind').value=S.profile.ind||'';
+  document.getElementById('p-goal').value=S.profile.goal||'';
+  document.getElementById('p-notes').value=S.profile.notes||'';
+}
+
+function saveProfile(){
+  S.profile.name=document.getElementById('p-name').value;
+  S.profile.ctitle=document.getElementById('p-ctitle').value;
+  S.profile.sit=document.getElementById('p-sit').value;
+  S.profile.role=document.getElementById('p-role').value;
+  S.profile.ind=document.getElementById('p-ind').value;
+  S.profile.goal=document.getElementById('p-goal').value;
+  S.profile.notes=document.getElementById('p-notes').value;
+  save(); updateHeader();
+}
+
+function showScreen(name,btn){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  if(btn)btn.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2200);
+}
+
+// ── PWA ──
+let deferredPrompt=null;
+window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();deferredPrompt=e;});
+
+if('serviceWorker' in navigator){
+  const sw=`self.addEventListener('install',()=>self.skipWaiting());self.addEventListener('fetch',e=>{e.respondWith(fetch(e.request).catch(()=>caches.match(e.request)));});`;
+  navigator.serviceWorker.register(URL.createObjectURL(new Blob([sw],{type:'text/javascript'}))).catch(()=>{});
+}
+
+const mf={name:"Career Comeback",short_name:"Career Comeback",display:"standalone",background_color:"#1a1f3c",theme_color:"#1a1f3c",start_url:".",icons:[{src:"data:image/svg+xml,"+encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" rx="40" fill="#1a1f3c"/><text x="96" y="130" font-size="100" text-anchor="middle" fill="#c9a84c">✦</text></svg>'),sizes:"192x192",type:"image/svg+xml"}]};
+const ml=document.createElement('link');ml.rel='manifest';ml.href=URL.createObjectURL(new Blob([JSON.stringify(mf)],{type:'application/manifest+json'}));document.head.appendChild(ml);
+
+// ── Init ──
+load();
+if(S.onboarded){
+  document.getElementById('wizard').classList.add('hidden');
+  buildApp();
+} else {
+  // Show wizard
+}
+</script>
+</body>
+</html>
